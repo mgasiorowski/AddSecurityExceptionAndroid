@@ -30,7 +30,12 @@ extension="${filename##*.}"
 filename="${filename%.*}"
 fileSuffix="_ssl.apk"
 newFileName=$filename$fileSuffix
-tmpDir=.tmp/$filename
+
+if [[ ! -z "${WORKSPACE}" ]]; then
+  tmpDir=${WORKSPACE}/.tmp/$filename
+else
+  tmpDir=.tmp/$filename
+fi
 
 apktool d -f -o $tmpDir $fullfile
 

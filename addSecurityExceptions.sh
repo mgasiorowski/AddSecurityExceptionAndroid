@@ -1,40 +1,75 @@
 #!/bin/bash
+args=`getopt f:k::d::s:: $*`
+
+if [[ $1 == "" ]];
+then
+  echo "No file apk supplied"
+  echo "Usage: ./addSecurityExceptions.sh <apk_filename>"
+  exit 2
+fi
+set -- $args
+
+# extract options and their arguments into variables.
+for i
+do
+  echo $i
+  case "$i" in
+      -f) FILE=$2 ; shift ;;
+      -k) KEYSTORE=$3 ; shift ;;
+      -d) TMPDIR=$4 ; shift ;;
+      -s) SUFFIX="$5" ; shift ;;
+      --) shift ; break ;;
+  esac
+done
+
 if ! type apktool > /dev/null; then
   echo "Please install apktool"
-  echo "Using Homebrew: `brew install apktool`"
+  echo "[Mac OS] Using Homebrew: 'brew install apktool'"
+  echo "[Other] https://ibotpeaches.github.io/Apktool/install/"
   exit -1
 fi
 
-if [ $# -eq 0 ]
+if [ -z "$KEYSTORE" ]; then
+  KEYSTORE="~/.android/debug.keystore"
+fi
+
+if [ -z "$TMPDIR" ]; then
+  TMPDIR="/tmp/"
+fi
+
+if [ -z "$SUFFIX" ]
   then
-    echo "No arguments supplied"
-    echo "Usage: ./addSecurityExceptions.sh APK filename"
-    exit -1
-fi
-if [ ! -z "$2" ]
-	then
-		debugKeystore=$2
-	else
-    if ! type ~/.android/debug.keystore > /dev/null; then
-      keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000
-    fi
-		debugKeystore=~/.android/debug.keystore
+    SUFFIX="_new.apk"
+  else
+    SUFFIX="_$SUFFIX.apk"
 fi
 
-
-fullfile=$1
+fullfile=$FILE
 filename=$(basename "$fullfile")
 extension="${filename##*.}"
 filename="${filename%.*}"
-new="_new.apk"
-newFileName=$filename$new
-tmpDir=/tmp/$filename
+tmpDir=$TMPDIR/$filename
+filenameSuffix=$SUFFIX
 
-apktool d -f -o $tmpDir $fullfile
+echo "FILE: $FILE"
+echo "TMPDIR: $TMPDIR"
+echo "KEYSTORE: $KEYSTORE"
+echo "SUFFIX: $filenameSuffix"
+
+if [ $KEYSTORE = ~/.android/debug.keystore ]
+  then
+    if [ ! -f ~/.android/debug.keystore ]; then
+      keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000
+    fi
+fi
 
 if [ ! -d "$tmpDir/res/xml" ]; then
-	mkdir $tmpDir/res/xml
+  mkdir $tmpDir/res/xml
 fi
+
+newFileName=$filename$filenameSuffix
+
+apktool d -f -o $tmpDir $fullfile
 
 cp ./network_security_config.xml $tmpDir/res/xml/.
 if ! grep -q "networkSecurityConfig" $tmpDir/AndroidManifest.xml; then

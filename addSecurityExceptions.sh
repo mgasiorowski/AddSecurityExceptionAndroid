@@ -30,12 +30,13 @@ extension="${filename##*.}"
 filename="${filename%.*}"
 fileSuffix="_ssl.apk"
 newFileName=$filename$fileSuffix
-workingDirectory=`pwd`
 
 if [[ ! -z "${WORKSPACE}" ]]; then
   tmpDir=${WORKSPACE}/.tmp/$filename
+  workingDirectory=`pwd/AddSecurityExceptionAndroid`
 else
   tmpDir=.tmp/$filename
+  workingDirectory=`pwd`
 fi
 
 apktool d -f -o $tmpDir $fullfile

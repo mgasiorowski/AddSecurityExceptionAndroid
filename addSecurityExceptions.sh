@@ -30,6 +30,7 @@ extension="${filename##*.}"
 filename="${filename%.*}"
 fileSuffix="_ssl.apk"
 newFileName=$filename$fileSuffix
+workingDirectory=`pwd`
 
 if [[ ! -z "${WORKSPACE}" ]]; then
   tmpDir=${WORKSPACE}/.tmp/$filename
@@ -43,7 +44,7 @@ if [ ! -d "$tmpDir/res/xml" ]; then
   mkdir $tmpDir/res/xml
 fi
 
-cp ./network_security_config.xml $tmpDir/res/xml/.
+cp $workingDirectory/network_security_config.xml $tmpDir/res/xml/.
 if ! grep -q "networkSecurityConfig" $tmpDir/AndroidManifest.xml; then
   sed -E "s/(<application.*)(>)/\1 android\:networkSecurityConfig=\"@xml\/network_security_config\" \2 /" $tmpDir/AndroidManifest.xml > $tmpDir/AndroidManifest.xml.new
   mv $tmpDir/AndroidManifest.xml.new $tmpDir/AndroidManifest.xml

@@ -39,6 +39,12 @@ else
   workingDirectory=`pwd`
 fi
 
+echo "====================================="
+echo "tmpDir: $tmpDir"
+echo "workingDirectory: $workingDirectory"
+echo "newFileName: $newFileName"
+echo "====================================="
+
 apktool d -f -o $tmpDir $fullfile
 
 if [ ! -d "$tmpDir/res/xml" ]; then

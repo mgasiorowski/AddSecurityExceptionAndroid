@@ -33,16 +33,19 @@ newFileName=$filename$fileSuffix
 
 if [[ -n "${WORKSPACE}" ]]; then
   tmpDir=${WORKSPACE}/.tmp/$filename
-  workingDirectory=`${WORKSPACE}/AddSecurityExceptionAndroid`
+  workingDirectory="${WORKSPACE}/AddSecurityExceptionAndroid"
+  outputDirectory=${WORKSPACE}
 else
   tmpDir=.tmp/$filename
   workingDirectory=`pwd`
+  outputDirectory=`pwd`
 fi
 
 echo "====================================="
 echo "tmpDir: $tmpDir"
 echo "workingDirectory: $workingDirectory"
 echo "newFileName: $newFileName"
+echo "outputDirectory: $outputDirectory"
 echo "====================================="
 
 apktool d -f -o $tmpDir $fullfile
@@ -59,5 +62,5 @@ fi
 
 apktool empty-framework-dir --force $tmpDir
 echo "Building new APK $newFileName"
-apktool b -o ./$newFileName $tmpDir
-jarsigner -verbose -keystore $debugKeystore -storepass android -keypass android ./$newFileName androiddebugkey
+apktool b -o $outputDirectory/$newFileName $tmpDir
+jarsigner -verbose -keystore $debugKeystore -storepass android -keypass android $outputDirectory/$newFileName androiddebugkey

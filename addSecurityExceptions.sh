@@ -33,7 +33,7 @@ newFileName=$filename$fileSuffix
 
 if [[ ! -z "${WORKSPACE}" ]]; then
   tmpDir=${WORKSPACE}/.tmp/$filename
-  workingDirectory=`pwd/AddSecurityExceptionAndroid`
+  workingDirectory=`${WORKSPACE}/AddSecurityExceptionAndroid`
 else
   tmpDir=.tmp/$filename
   workingDirectory=`pwd`

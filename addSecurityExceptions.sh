@@ -31,7 +31,7 @@ filename="${filename%.*}"
 fileSuffix="_ssl.apk"
 newFileName=$filename$fileSuffix
 
-if [[ ! -z "${WORKSPACE}" ]]; then
+if [[ -n "${WORKSPACE}" ]]; then
   tmpDir=${WORKSPACE}/.tmp/$filename
   workingDirectory=`${WORKSPACE}/AddSecurityExceptionAndroid`
 else
